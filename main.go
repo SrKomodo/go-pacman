@@ -41,32 +41,25 @@ func main() {
 		panic(err)
 	}
 
-	// Create VAO
-	var vao uint32
-	gl.GenVertexArrays(1, &vao)
-	gl.BindVertexArray(vao)
+	square := newEntity(
+		"shaders/vertex.glsl",
+		"shaders/fragment.glsl",
+		createSquare(-.5, -.5, .75, .75),
+	)
 
-	// Create VBO
-	vertices := []float32{
-		0, 0.5,
-		.5, -.5,
-		-.5, -.5,
-	}
+	otherSquare := newEntity(
+		"shaders/vertex.glsl",
+		"shaders/fragment2.glsl",
+		createSquare(-.25, -.25, .75, .75),
+	)
 
-	var vbo uint32
-	gl.GenBuffers(1, &vbo)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*4 /* I have no idea why i have to multiply */, gl.Ptr(vertices), gl.STATIC_DRAW)
-
-	// Create program
-	program := createProgram("shaders/vertex.glsl", "shaders/fragment.glsl")
-
-	gl.UseProgram(program)
 	gl.ClearColor(0, 0.0, 1.0, 1.0)
 
 	for !win.ShouldClose() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
-		gl.DrawArrays(gl.TRIANGLES, 0, 3)
+
+		square.draw()
+		otherSquare.draw()
 
 		win.SwapBuffers()
 		glfw.PollEvents()
