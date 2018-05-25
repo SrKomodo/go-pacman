@@ -8,6 +8,9 @@ import (
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
+const width = 600
+const height = 600
+
 func init() {
 	runtime.LockOSThread()
 }
@@ -24,7 +27,7 @@ func main() {
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 
-	win, err := glfw.CreateWindow(600, 600, "Go Pacman", nil, nil)
+	win, err := glfw.CreateWindow(width, height, "Go Pacman", nil, nil)
 	if err != nil {
 		panic(fmt.Errorf("could not create glfw window: %v", err))
 	}
@@ -34,12 +37,13 @@ func main() {
 	if err := gl.Init(); err != nil {
 		panic(err)
 	}
+	gl.ClearColor(0, 0.0, 1.0, 1.0)
 
-	win.SetFramebufferSizeCallback(func(w *glfw.Window, width, height int) {
-		if height < width {
-			gl.Viewport(int32(width/2-height/2), 0, int32(height), int32(height))
+	win.SetFramebufferSizeCallback(func(win *glfw.Window, newW, newH int) {
+		if newH < newW {
+			gl.Viewport(int32(newW/2-newH/2), 0, int32(newH), int32(newH))
 		} else {
-			gl.Viewport(0, int32(height/2-width/2), int32(width), int32(width))
+			gl.Viewport(0, int32(newH/2-newW/2), int32(newW), int32(newW))
 		}
 	})
 
@@ -53,9 +57,11 @@ func main() {
 		},
 	)
 
-	gl.ClearColor(0, 0.0, 1.0, 1.0)
+	t := gl.GetUniformLocation(pacman.program, gl.Str("t\x00"))
 
 	for !win.ShouldClose() {
+		gl.Uniform1f(t, float32(glfw.GetTime()))
+
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		pacman.draw()
