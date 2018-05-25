@@ -1,7 +1,7 @@
 #version 150 core
 
-out vec4 c;
+out vec4 gl_Color;
 
 void main() {
-  c = vec4(0.0, 1.0, 0.0, 1.0);
+  gl_Color = vec4(0.0, 1.0, 0.0, 1.0);
 }

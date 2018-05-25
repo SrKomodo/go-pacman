@@ -45,12 +45,18 @@ func main() {
 		"shaders/vertex.glsl",
 		"shaders/fragment.glsl",
 		createSquare(-.5, -.5, .75, .75),
+		[]attribute{
+			{"p\x00", 2},
+		},
 	)
 
 	otherSquare := newEntity(
 		"shaders/vertex.glsl",
 		"shaders/fragment2.glsl",
 		createSquare(-.25, -.25, .75, .75),
+		[]attribute{
+			{"p\x00", 2},
+		},
 	)
 
 	gl.ClearColor(0, 0.0, 1.0, 1.0)

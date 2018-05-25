@@ -59,7 +59,7 @@ func createProgram(vertexPath, fragmentPath string) uint32 {
 	gl.AttachShader(program, vertex)
 	gl.AttachShader(program, fragment)
 
-	gl.BindFragDataLocation(program, 0, gl.Str("c\x00")) // Link `c` attribute in fragment shader
+	gl.BindFragDataLocation(program, 0, gl.Str("gl_Color\x00")) // Link `c` attribute in fragment shader
 
 	gl.LinkProgram(program) // Compile program
 
@@ -75,11 +75,6 @@ func createProgram(vertexPath, fragmentPath string) uint32 {
 
 		panic(fmt.Errorf("failed to link program: %v", log))
 	}
-
-	// Link `p` attribute in vertex shader
-	pAttrib := uint32(gl.GetAttribLocation(program, gl.Str("p\x00")))
-	gl.EnableVertexAttribArray(pAttrib)
-	gl.VertexAttribPointer(pAttrib, 2, gl.FLOAT, false, 0, gl.PtrOffset(0))
 
 	return program
 }
