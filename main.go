@@ -12,10 +12,11 @@ func init() {
 	runtime.LockOSThread()
 }
 
-func initGlfw() *glfw.Window {
+func main() {
 	if err := glfw.Init(); err != nil {
 		panic(fmt.Errorf("could not initialize glfw: %v", err))
 	}
+	defer glfw.Terminate()
 
 	glfw.WindowHint(glfw.ContextVersionMajor, 4)
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
@@ -23,38 +24,29 @@ func initGlfw() *glfw.Window {
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 
-	win, err := glfw.CreateWindow(800, 600, "Go Pacman", nil, nil)
+	win, err := glfw.CreateWindow(600, 600, "Go Pacman", nil, nil)
 	if err != nil {
 		panic(fmt.Errorf("could not create glfw window: %v", err))
 	}
 
 	win.MakeContextCurrent()
 
-	return win
-}
-
-func main() {
-	win := initGlfw()
-	defer glfw.Terminate()
-
 	if err := gl.Init(); err != nil {
 		panic(err)
 	}
 
-	square := newEntity(
-		"shaders/vertex.glsl",
-		"shaders/fragment.glsl",
-		createSquare(-.5, -.5, .75, .75),
-		[]attribute{
-			{"p\x00", 2},
-			{"_uv\x00", 2},
-		},
-	)
+	win.SetFramebufferSizeCallback(func(w *glfw.Window, width, height int) {
+		if height < width {
+			gl.Viewport(int32(width/2-height/2), 0, int32(height), int32(height))
+		} else {
+			gl.Viewport(0, int32(height/2-width/2), int32(width), int32(width))
+		}
+	})
 
-	otherSquare := newEntity(
+	pacman := newEntity(
 		"shaders/vertex.glsl",
-		"shaders/fragment2.glsl",
-		createSquare(-.25, -.25, .75, .75),
+		"shaders/pacman.glsl",
+		createSquare(-.5, -.5, 1, 1),
 		[]attribute{
 			{"p\x00", 2},
 			{"_uv\x00", 2},
@@ -66,8 +58,7 @@ func main() {
 	for !win.ShouldClose() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
-		square.draw()
-		otherSquare.draw()
+		pacman.draw()
 
 		win.SwapBuffers()
 		glfw.PollEvents()
