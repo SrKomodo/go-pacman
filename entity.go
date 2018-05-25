@@ -10,15 +10,15 @@ type attribute struct {
 }
 
 type entity struct {
-	vao      uint32
-	program  uint32
-	vertices []float32
+	vao     uint32
+	program uint32
+	size    int32
 }
 
 func (e *entity) draw() {
 	gl.BindVertexArray(e.vao)
 	gl.UseProgram(e.program)
-	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(e.vertices)/2))
+	gl.DrawArrays(gl.TRIANGLES, 0, e.size)
 }
 
 func newEntity(vertexPath, fragmentPath string, vertices []float32, attributes []attribute) *entity {
@@ -44,8 +44,9 @@ func newEntity(vertexPath, fragmentPath string, vertices []float32, attributes [
 	for _, attrib := range attributes {
 		pointer := uint32(gl.GetAttribLocation(program, gl.Str(attrib.name)))
 		gl.EnableVertexAttribArray(pointer)
-		gl.VertexAttribPointer(pointer, attrib.size, gl.FLOAT, false, totalSize-attrib.size, gl.PtrOffset(offset))
+		gl.VertexAttribPointer(pointer, attrib.size, gl.FLOAT, false, totalSize*4, gl.PtrOffset(offset*4))
+		offset += int(attrib.size)
 	}
 
-	return &entity{vao, program, vertices}
+	return &entity{vao, program, int32(len(vertices)) / totalSize}
 }

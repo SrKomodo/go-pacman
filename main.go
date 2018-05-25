@@ -47,6 +47,7 @@ func main() {
 		createSquare(-.5, -.5, .75, .75),
 		[]attribute{
 			{"p\x00", 2},
+			{"_uv\x00", 2},
 		},
 	)
 
@@ -56,6 +57,7 @@ func main() {
 		createSquare(-.25, -.25, .75, .75),
 		[]attribute{
 			{"p\x00", 2},
+			{"_uv\x00", 2},
 		},
 	)
 

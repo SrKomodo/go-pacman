@@ -10,12 +10,12 @@ import (
 
 func createSquare(x, y, w, h float32) []float32 {
 	return []float32{
-		x, y,
-		x + w, y + h,
-		x, y + h,
-		x, y,
-		x + w, y,
-		x + w, y + h,
+		x, y, 0, 0,
+		x + w, y + h, 1, 1,
+		x, y + h, 0, 1,
+		x, y, 0, 0,
+		x + w, y, 1, 0,
+		x + w, y + h, 1, 1,
 	}
 }
 
