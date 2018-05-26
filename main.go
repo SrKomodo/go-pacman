@@ -39,7 +39,7 @@ func main() {
 	if err := gl.Init(); err != nil {
 		panic(err)
 	}
-	gl.ClearColor(0, 0.0, 1.0, 1.0)
+	gl.ClearColor(0, 0, 0, 1)
 
 	win.SetFramebufferSizeCallback(func(win *glfw.Window, newW, newH int) {
 		w := float64(newW)
@@ -59,9 +59,18 @@ func main() {
 		)
 	})
 
+	bg := newSprite(
+		"shaders/vertex.glsl",
+		"shaders/bg.glsl",
+		"textures/map.png",
+		-1, 1, 2, 2,
+		nil,
+	)
+
 	pacman := newSprite(
 		"shaders/vertex.glsl",
 		"shaders/pacman.glsl",
+		"",
 		-.5, .5, 1, 1,
 		[]string{
 			"t",
@@ -91,6 +100,7 @@ func main() {
 
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
+		bg.draw()
 		pacman.draw()
 
 		win.SwapBuffers()

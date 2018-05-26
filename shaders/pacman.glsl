@@ -26,7 +26,7 @@ void main() {
   );
 
   gl_Color = mix(
-    vec4(0, 0, 1, 0),
+    vec4(0, 0, 0, 0),
     vec4(1, 1, 0, 1),
     mask
   );

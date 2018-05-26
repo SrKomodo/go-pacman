@@ -2,13 +2,17 @@ package main
 
 import (
 	"fmt"
+	"image"
+	"image/draw"
+	"image/png"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
-func compileShader(path string, shaderType uint32) uint32 {
+func newShader(path string, shaderType uint32) uint32 {
 	// Read shader file
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -38,10 +42,10 @@ func compileShader(path string, shaderType uint32) uint32 {
 	return shader
 }
 
-func createProgram(vertexPath, fragmentPath string) uint32 {
+func newProgram(vertexPath, fragmentPath string) uint32 {
 	// Compile shaders
-	vertex := compileShader(vertexPath, gl.VERTEX_SHADER)
-	fragment := compileShader(fragmentPath, gl.FRAGMENT_SHADER)
+	vertex := newShader(vertexPath, gl.VERTEX_SHADER)
+	fragment := newShader(fragmentPath, gl.FRAGMENT_SHADER)
 
 	program := gl.CreateProgram() // Create program
 	// Attach shaders
@@ -66,4 +70,44 @@ func createProgram(vertexPath, fragmentPath string) uint32 {
 	}
 
 	return program
+}
+
+func newTexture(path string) uint32 {
+	imgFile, err := os.Open(path)
+	if err != nil {
+		panic(fmt.Errorf("could not open %s: %v", path, err))
+	}
+
+	img, err := png.Decode(imgFile)
+	if err != nil {
+		panic(fmt.Errorf("could not decode %s: %v", path, err))
+	}
+
+	rgba := image.NewRGBA(img.Bounds())
+	if rgba.Stride != rgba.Rect.Size().X*4 {
+		panic("unsuported stride")
+	}
+	draw.Draw(rgba, rgba.Bounds(), img, image.Point{0, 0}, draw.Src)
+
+	var texture uint32
+	gl.GenTextures(1, &texture)
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, texture)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	gl.TexImage2D(
+		gl.TEXTURE_2D,
+		0,
+		gl.RGBA,
+		int32(rgba.Rect.Size().X),
+		int32(rgba.Rect.Size().Y),
+		0,
+		gl.RGBA,
+		gl.UNSIGNED_BYTE,
+		gl.Ptr(rgba.Pix),
+	)
+
+	return texture
 }
