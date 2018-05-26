@@ -46,8 +46,8 @@ func newPacman() pacman {
 	w, h := pxToScreen(16, 16)
 
 	sprite := newSprite(
-		"shaders/vert/pacman.glsl",
-		"shaders/frag/pacman.glsl",
+		"res/shaders/vert/pacman.glsl",
+		"res/shaders/frag/pacman.glsl",
 		"",
 		-1, -1, float32(w), float32(h),
 		[]string{

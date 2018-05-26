@@ -62,9 +62,9 @@ func main() {
 	})
 
 	bg := newSprite(
-		"shaders/vert/default.glsl",
-		"shaders/frag/bg.glsl",
-		"textures/map.png",
+		"res/shaders/vert/default.glsl",
+		"res/shaders/frag/bg.glsl",
+		"res/textures/map.png",
 		-1, -1, 2, 2,
 		nil,
 	)
