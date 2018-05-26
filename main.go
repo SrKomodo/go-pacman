@@ -8,10 +8,10 @@ import (
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
-var width = 448.0
-var height = 496.0
+var width = 144.0 * 2
+var height = 168.0 * 2
 
-const aspectRatio = 224.0 / 248.0
+const aspectRatio = 144.0 / 168.0
 
 func init() {
 	runtime.LockOSThread()
@@ -67,36 +67,16 @@ func main() {
 		nil,
 	)
 
-	pacman := newSprite(
-		"shaders/vert/default.glsl",
-		"shaders/frag/pacman.glsl",
-		"",
-		-.5, .5, 1, 1,
-		[]string{
-			"t",
-			"dir",
-		},
-	)
+	pacman := newPacman()
 
-	var dir float32
 	win.SetKeyCallback(func(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
-		switch key {
-		case glfw.KeyA:
-			dir = 0
-		case glfw.KeyW:
-			dir = 1
-		case glfw.KeyD:
-			dir = 2
-		case glfw.KeyS:
-			dir = 3
-		}
+		pacman.onKey(key)
 	})
 
 	for !win.ShouldClose() {
 		glfw.PollEvents()
 
-		pacman.setUniform("t", float32(glfw.GetTime()))
-		pacman.setUniform("dir", dir)
+		pacman.update()
 
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
