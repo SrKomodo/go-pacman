@@ -8,8 +8,8 @@ import (
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
-var width = 144.0 * 2
-var height = 168.0 * 2
+const width = 144.0
+const height = 168.0
 
 const aspectRatio = 144.0 / 168.0
 
@@ -29,7 +29,7 @@ func main() {
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 
-	win, err := glfw.CreateWindow(int(width), int(height), "Go Pacman", nil, nil)
+	win, err := glfw.CreateWindow(int(width*2), int(height*2), "Go Pacman", nil, nil)
 	if err != nil {
 		panic(fmt.Errorf("could not create glfw window: %v", err))
 	}
@@ -41,21 +41,23 @@ func main() {
 	}
 	gl.ClearColor(0, 0, 0, 1)
 
-	win.SetFramebufferSizeCallback(func(win *glfw.Window, newW, newH int) {
-		w := float64(newW)
-		h := float64(newH)
+	win.SetFramebufferSizeCallback(func(window *glfw.Window, vW, vH int) {
+		w := float64(vW)
+		h := float64(vH)
+		var newW float64
+		var newH float64
 		if w/h > aspectRatio {
-			width = h * aspectRatio
-			height = h
+			newW = h * aspectRatio
+			newH = h
 		} else {
-			width = w
-			height = w / aspectRatio
+			newW = w
+			newH = w / aspectRatio
 		}
 		gl.Viewport(
-			int32(w/2-width/2),
-			int32(h/2-height/2),
-			int32(width),
-			int32(height),
+			int32(w/2-newW/2),
+			int32(h/2-newH/2),
+			int32(newW),
+			int32(newH),
 		)
 	})
 
@@ -63,23 +65,18 @@ func main() {
 		"shaders/vert/default.glsl",
 		"shaders/frag/bg.glsl",
 		"textures/map.png",
-		-1, 1, 2, 2,
+		-1, -1, 2, 2,
 		nil,
 	)
 
 	pacman := newPacman()
 
-	win.SetKeyCallback(func(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
-		pacman.onKey(key)
-	})
-
 	for !win.ShouldClose() {
 		glfw.PollEvents()
 
-		pacman.update()
-
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
+		pacman.update()
 		bg.draw()
 		pacman.draw()
 

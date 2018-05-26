@@ -10,5 +10,5 @@ out vec2 p;
 
 void main () {
   p = uv;
-  gl_Position = vec4(coords + vec2(x, y) / 100, 0.0, 1.0);
+  gl_Position = vec4(coords + vec2(x, y), 0.0, 1.0);
 }
