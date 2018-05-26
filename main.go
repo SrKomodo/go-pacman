@@ -8,8 +8,10 @@ import (
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
-const width = 600
-const height = 600
+var width = 448.0
+var height = 496.0
+
+const aspectRatio = 224.0 / 248.0
 
 func init() {
 	runtime.LockOSThread()
@@ -27,7 +29,7 @@ func main() {
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 
-	win, err := glfw.CreateWindow(width, height, "Go Pacman", nil, nil)
+	win, err := glfw.CreateWindow(int(width), int(height), "Go Pacman", nil, nil)
 	if err != nil {
 		panic(fmt.Errorf("could not create glfw window: %v", err))
 	}
@@ -40,11 +42,21 @@ func main() {
 	gl.ClearColor(0, 0.0, 1.0, 1.0)
 
 	win.SetFramebufferSizeCallback(func(win *glfw.Window, newW, newH int) {
-		if newH < newW {
-			gl.Viewport(int32(newW/2-newH/2), 0, int32(newH), int32(newH))
+		w := float64(newW)
+		h := float64(newH)
+		if w/h > aspectRatio {
+			width = h * aspectRatio
+			height = h
 		} else {
-			gl.Viewport(0, int32(newH/2-newW/2), int32(newW), int32(newW))
+			width = w
+			height = w / aspectRatio
 		}
+		gl.Viewport(
+			int32(w/2-width/2),
+			int32(h/2-height/2),
+			int32(width),
+			int32(height),
+		)
 	})
 
 	pacman := newSprite(
