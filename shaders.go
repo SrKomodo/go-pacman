@@ -8,17 +8,6 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
-func createSquare(x, y, w, h float32) []float32 {
-	return []float32{
-		x, y, 0, 0,
-		x + w, y + h, 1, 1,
-		x, y + h, 0, 1,
-		x, y, 0, 0,
-		x + w, y, 1, 0,
-		x + w, y + h, 1, 1,
-	}
-}
-
 func compileShader(path string, shaderType uint32) uint32 {
 	// Read shader file
 	bytes, err := ioutil.ReadFile(path)

@@ -47,14 +47,10 @@ func main() {
 		}
 	})
 
-	pacman := newEntity(
+	pacman := newSprite(
 		"shaders/vertex.glsl",
 		"shaders/pacman.glsl",
-		createSquare(-.5, -.5, 1, 1),
-		[]attribute{
-			{"p\x00", 2},
-			{"_uv\x00", 2},
-		},
+		-.5, -.5, 1, 1,
 		[]string{
 			"t",
 			"dir",

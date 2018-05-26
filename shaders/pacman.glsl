@@ -3,12 +3,12 @@
 uniform float t;
 uniform float dir;
 
-in vec2 uv;
+in vec2 p;
 out vec4 gl_Color;
 
 void main() {
-  float r = sqrt(pow(uv.x - .5, 2) + pow(uv.y - .5, 2));
-  float a = atan(uv.y - .5, uv.x - .5);
+  float r = sqrt(pow(p.x - .5, 2) + pow(p.y - .5, 2));
+  float a = atan(p.y - .5, p.x - .5);
 
   float sinT = sin(t * 10) / 2 + .5;
   float mask = min(

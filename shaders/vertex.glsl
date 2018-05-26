@@ -1,11 +1,11 @@
 #version 150 core
 
-in vec2 p;
-in vec2 _uv;
+in vec2 coords;
+in vec2 uv;
 
-out vec2 uv;
+out vec2 p;
 
 void main () {
-  uv = _uv;
-  gl_Position = vec4(p, 0.0, 1.0);
+  p = uv;
+  gl_Position = vec4(coords, 0.0, 1.0);
 }
