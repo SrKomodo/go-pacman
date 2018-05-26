@@ -60,16 +60,16 @@ func main() {
 	})
 
 	bg := newSprite(
-		"shaders/vertex.glsl",
-		"shaders/bg.glsl",
+		"shaders/vert/default.glsl",
+		"shaders/frag/bg.glsl",
 		"textures/map.png",
 		-1, 1, 2, 2,
 		nil,
 	)
 
 	pacman := newSprite(
-		"shaders/vertex.glsl",
-		"shaders/pacman.glsl",
+		"shaders/vert/default.glsl",
+		"shaders/frag/pacman.glsl",
 		"",
 		-.5, .5, 1, 1,
 		[]string{
