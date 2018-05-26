@@ -55,18 +55,36 @@ func main() {
 			{"p\x00", 2},
 			{"_uv\x00", 2},
 		},
+		[]string{
+			"t",
+			"dir",
+		},
 	)
 
-	t := gl.GetUniformLocation(pacman.program, gl.Str("t\x00"))
+	var dir float32
+	win.SetKeyCallback(func(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
+		switch key {
+		case glfw.KeyA:
+			dir = 0
+		case glfw.KeyW:
+			dir = 1
+		case glfw.KeyD:
+			dir = 2
+		case glfw.KeyS:
+			dir = 3
+		}
+	})
 
 	for !win.ShouldClose() {
-		gl.Uniform1f(t, float32(glfw.GetTime()))
+		glfw.PollEvents()
+
+		pacman.setUniform("t", float32(glfw.GetTime()))
+		pacman.setUniform("dir", dir)
 
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		pacman.draw()
 
 		win.SwapBuffers()
-		glfw.PollEvents()
 	}
 }

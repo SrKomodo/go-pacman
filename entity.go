@@ -10,9 +10,10 @@ type attribute struct {
 }
 
 type entity struct {
-	vao     uint32
-	program uint32
-	size    int32
+	vao      uint32
+	program  uint32
+	size     int32
+	uniforms map[string]int32
 }
 
 func (e *entity) draw() {
@@ -21,7 +22,11 @@ func (e *entity) draw() {
 	gl.DrawArrays(gl.TRIANGLES, 0, e.size)
 }
 
-func newEntity(vertexPath, fragmentPath string, vertices []float32, attributes []attribute) *entity {
+func (e *entity) setUniform(name string, value float32) {
+	gl.Uniform1f(e.uniforms[name], value)
+}
+
+func newEntity(vertexPath, fragmentPath string, vertices []float32, attributes []attribute, uniforms []string) *entity {
 	var vao uint32
 	gl.GenVertexArrays(1, &vao)
 	gl.BindVertexArray(vao)
@@ -48,5 +53,10 @@ func newEntity(vertexPath, fragmentPath string, vertices []float32, attributes [
 		offset += int(attrib.size)
 	}
 
-	return &entity{vao, program, int32(len(vertices)) / totalSize}
+	newUniforms := make(map[string]int32)
+	for _, uniform := range uniforms {
+		newUniforms[uniform] = gl.GetUniformLocation(program, gl.Str(uniform+"\x00"))
+	}
+
+	return &entity{vao, program, int32(len(vertices)) / totalSize, newUniforms}
 }
