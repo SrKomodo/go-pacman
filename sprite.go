@@ -14,7 +14,7 @@ type sprite struct {
 func (e *sprite) draw() {
 	gl.BindVertexArray(e.vao)
 	gl.UseProgram(e.program)
-	gl.DrawArrays(gl.TRIANGLES, 0, e.size)
+	gl.DrawArrays(gl.TRIANGLE_STRIP, 0, e.size)
 }
 
 func (e *sprite) setUniform(name string, value float32) {
@@ -28,12 +28,10 @@ func newSprite(
 ) *sprite {
 	// Generate vertices
 	vertices := []float32{
+		x, y - h, 0, 1,
 		x, y, 0, 0,
-		x + w, y + h, 1, 1,
-		x, y + h, 0, 1,
-		x, y, 0, 0,
+		x + w, y - h, 1, 1,
 		x + w, y, 1, 0,
-		x + w, y + h, 1, 1,
 	}
 
 	var vao uint32

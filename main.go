@@ -50,7 +50,7 @@ func main() {
 	pacman := newSprite(
 		"shaders/vertex.glsl",
 		"shaders/pacman.glsl",
-		-.5, -.5, 1, 1,
+		-.5, .5, 1, 1,
 		[]string{
 			"t",
 			"dir",
