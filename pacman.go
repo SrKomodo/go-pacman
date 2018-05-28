@@ -5,42 +5,70 @@ import (
 )
 
 type pacman struct {
-	sprite *sprite
-	dir    float64
-	from   *node
+	sprite  *sprite
+	from    *node
+	to      *connection
+	travel  float64
+	dir     int
+	nextDir int
 }
 
-func (p *pacman) goTo(n *node) {
-	if n != nil {
-		p.from = n
-	}
-}
+func (p *pacman) update(t, dT float64) {
+	p.sprite.setUniform("t", float32(t))
 
-func (p *pacman) update() {
-	if isKeyPressed(glfw.KeyA) {
-		p.dir = 0
-		p.goTo(p.from.connections[3].node)
-	}
-	if isKeyPressed(glfw.KeyS) {
-		p.dir = 3
-		p.goTo(p.from.connections[2].node)
-	}
-	if isKeyPressed(glfw.KeyD) {
-		p.dir = 2
-		p.goTo(p.from.connections[1].node)
-	}
-	if isKeyPressed(glfw.KeyW) {
-		p.dir = 1
-		p.goTo(p.from.connections[0].node)
+	switch {
+	case isKeyPressed(glfw.KeyW):
+		p.nextDir = 0
+	case isKeyPressed(glfw.KeyD):
+		p.nextDir = 1
+	case isKeyPressed(glfw.KeyS):
+		p.nextDir = 2
+	case isKeyPressed(glfw.KeyA):
+		p.nextDir = 3
 	}
 
-	p.sprite.setUniform("t", float32(glfw.GetTime()))
-	p.sprite.setUniform("dir", float32(p.dir))
+	// If we want to reverse
+	if (p.dir-p.nextDir == 2 || p.dir-p.nextDir == -2) && p.travel != 0 {
+		p.from = p.to.node
+		p.to = p.from.connections[p.nextDir]
+		p.travel = 1 - p.travel
+		p.dir = p.nextDir
+		p.sprite.setUniform("dir", float32(p.dir))
+	}
 
-	x, y := nodeToScreen(float64(p.from.x), float64(p.from.y))
+	if p.to == nil {
+		if p.from.connections[p.nextDir] != nil {
+			p.sprite.setUniform("dir", float32(p.nextDir))
+			p.to = p.from.connections[p.nextDir]
+			p.dir = p.nextDir
+		}
+	} else {
+		p.travel += dT / float64(p.to.distance) * 4
 
-	p.sprite.setUniform("x", float32(x))
-	p.sprite.setUniform("y", float32(y))
+		x := float64(p.from.x) + p.travel*float64(p.to.node.x-p.from.x)
+		y := float64(p.from.y) + p.travel*float64(p.to.node.y-p.from.y)
+		x, y = nodeToScreen(x, y)
+
+		p.sprite.setUniform("x", float32(x))
+		p.sprite.setUniform("y", float32(y))
+	}
+
+	if p.travel >= 1 {
+		p.from = p.to.node
+		p.travel = 0
+		if p.to.node.connections[p.nextDir] != nil {
+			p.sprite.setUniform("dir", float32(p.nextDir))
+			p.to = p.from.connections[p.nextDir]
+			p.dir = p.nextDir
+		} else {
+			if p.to.node.connections[p.dir] != nil {
+				p.sprite.setUniform("dir", float32(p.dir))
+				p.to = p.from.connections[p.dir]
+			} else {
+				p.to = nil
+			}
+		}
+	}
 }
 
 func (p *pacman) draw() {
@@ -63,5 +91,6 @@ func newPacman() pacman {
 		},
 	)
 
-	return pacman{sprite, 0, lvl.getNode(1, 1)}
+	sprite.setUniform("dir", 1)
+	return pacman{sprite, lvl.getNode(1, 1), lvl.getNode(1, 1).connections[1], 0, 1, 1}
 }

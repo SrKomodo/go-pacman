@@ -73,17 +73,23 @@ func main() {
 	)
 
 	pacman := newPacman()
+	prevT := 0.0
 
 	// Main loop
 	for !win.ShouldClose() {
+		t := glfw.GetTime()
+		dT := t - prevT
+
 		glfw.PollEvents()
 
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
-		pacman.update()
+		pacman.update(t, dT)
 		bg.draw()
 		pacman.draw()
 
 		win.SwapBuffers()
+
+		prevT = t
 	}
 }

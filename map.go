@@ -14,7 +14,7 @@ type connection struct {
 type node struct {
 	x           int
 	y           int
-	connections [4]connection
+	connections [4]*connection
 }
 
 type level struct {
@@ -42,16 +42,16 @@ func distance(x1, y1, x2, y2 int) int {
 func connnectNodesLR(n1, n2 *node) {
 	if n1 != nil {
 		dist := distance(n1.x, n1.y, n2.x, n2.y)
-		n1.connections[1] = connection{dist, n2}
-		n2.connections[3] = connection{dist, n1}
+		n1.connections[1] = &connection{dist, n2}
+		n2.connections[3] = &connection{dist, n1}
 	}
 }
 
 func connectNodesTB(n1, n2 *node) {
 	if n1 != nil {
 		dist := distance(n1.x, n1.y, n2.x, n2.y)
-		n1.connections[2] = connection{dist, n2}
-		n2.connections[0] = connection{dist, n1}
+		n1.connections[2] = &connection{dist, n2}
+		n2.connections[0] = &connection{dist, n1}
 	}
 }
 
@@ -93,22 +93,22 @@ func newLevel(path string) *level {
 			if prv {
 				if nxt { // 000
 					if text[(y-1)*w+x] == 48 || text[(y+1)*w+x] == 48 {
-						n = &node{x, y, [4]connection{}}
+						n = &node{x, y, [4]*connection{}}
 						connnectNodesLR(leftNode, n)
 						leftNode = n
 					}
 				} else { // 001
-					n = &node{x, y, [4]connection{}}
+					n = &node{x, y, [4]*connection{}}
 					connnectNodesLR(leftNode, n)
 					leftNode = nil
 				}
 			} else {
 				if nxt { // 100
-					n = &node{x, y, [4]connection{}}
+					n = &node{x, y, [4]*connection{}}
 					leftNode = n
 				} else { // 101
 					if text[(y-1)*w+x] != 48 || text[(y+1)*w+x] != 48 {
-						n = &node{x, y, [4]connection{}}
+						n = &node{x, y, [4]*connection{}}
 					}
 				}
 			}

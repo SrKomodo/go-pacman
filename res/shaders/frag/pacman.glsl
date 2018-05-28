@@ -16,10 +16,10 @@ void main() {
     step(
       abs(
         mod(
-          a / 3.14159  // [-1;1]
-          / 2 + .5     // [ 0;1]
-          - dir / 4, 1 // [ 0;1] centered at dir
-        ) * 2 - 1      // [-1;1] centered at dir
+          a / 3.14159        // [-1;1]
+          / 2 + .5           // [ 0;1]
+          - (dir + 1) / 4, 1 // [ 0;1] centered at dir
+        ) * 2 - 1            // [-1;1] centered at dir
       ),
       1 - (sinT * .25)
     )
