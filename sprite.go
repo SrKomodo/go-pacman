@@ -35,10 +35,10 @@ func newSprite(
 ) *sprite {
 	// Generate vertices
 	vertices := []float32{
-		x, y + h, 0, 1,
-		x, y, 0, 0,
-		x + w, y + h, 1, 1,
-		x + w, y, 1, 0,
+		x, y + h, 0, 0,
+		x, y, 0, 1,
+		x + w, y + h, 1, 0,
+		x + w, y, 1, 1,
 	}
 
 	var vao uint32

@@ -13,34 +13,42 @@ const height = 168.0
 
 const aspectRatio = 144.0 / 168.0
 
+var lvl *level
+
 func init() {
 	runtime.LockOSThread()
 }
 
 func main() {
+	lvl = newLevel("res/map.txt")
+
+	// Init GLFW
 	if err := glfw.Init(); err != nil {
 		panic(fmt.Errorf("could not initialize glfw: %v", err))
 	}
 	defer glfw.Terminate()
 
+	// Set window settings
 	glfw.WindowHint(glfw.ContextVersionMajor, 4)
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
 	glfw.WindowHint(glfw.Resizable, glfw.True)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 
+	// Create window
 	win, err := glfw.CreateWindow(int(width*2), int(height*2), "Go Pacman", nil, nil)
 	if err != nil {
 		panic(fmt.Errorf("could not create glfw window: %v", err))
 	}
-
 	win.MakeContextCurrent()
 
+	// Init OpenGL
 	if err := gl.Init(); err != nil {
 		panic(err)
 	}
 	gl.ClearColor(0, 0, 0, 1)
 
+	// Correctly rezise OpenGL viewport
 	win.SetFramebufferSizeCallback(func(window *glfw.Window, vW, vH int) {
 		w := float64(vW)
 		h := float64(vH)
@@ -53,12 +61,7 @@ func main() {
 			newW = w
 			newH = w / aspectRatio
 		}
-		gl.Viewport(
-			int32(w/2-newW/2),
-			int32(h/2-newH/2),
-			int32(newW),
-			int32(newH),
-		)
+		gl.Viewport(int32(w/2-newW/2), int32(h/2-newH/2), int32(newW), int32(newH))
 	})
 
 	bg := newSprite(
@@ -71,6 +74,7 @@ func main() {
 
 	pacman := newPacman()
 
+	// Main loop
 	for !win.ShouldClose() {
 		glfw.PollEvents()
 

@@ -7,32 +7,37 @@ import (
 type pacman struct {
 	sprite *sprite
 	dir    float64
-	x      float64
-	y      float64
+	from   *node
+}
+
+func (p *pacman) goTo(n *node) {
+	if n != nil {
+		p.from = n
+	}
 }
 
 func (p *pacman) update() {
-	if isKeyPressed(glfw.KeyW) {
-		p.dir = 3
-		p.y += 8
-	}
 	if isKeyPressed(glfw.KeyA) {
 		p.dir = 0
-		p.x -= 8
+		p.goTo(p.from.connections[3].node)
 	}
 	if isKeyPressed(glfw.KeyS) {
-		p.dir = 1
-		p.y -= 8
+		p.dir = 3
+		p.goTo(p.from.connections[2].node)
 	}
 	if isKeyPressed(glfw.KeyD) {
 		p.dir = 2
-		p.x += 8
+		p.goTo(p.from.connections[1].node)
+	}
+	if isKeyPressed(glfw.KeyW) {
+		p.dir = 1
+		p.goTo(p.from.connections[0].node)
 	}
 
 	p.sprite.setUniform("t", float32(glfw.GetTime()))
 	p.sprite.setUniform("dir", float32(p.dir))
 
-	x, y := pxToScreen(p.x*2, p.y*2)
+	x, y := nodeToScreen(float64(p.from.x), float64(p.from.y))
 
 	p.sprite.setUniform("x", float32(x))
 	p.sprite.setUniform("y", float32(y))
@@ -43,13 +48,13 @@ func (p *pacman) draw() {
 }
 
 func newPacman() pacman {
-	w, h := pxToScreen(16, 16)
+	w, h := pxToScreen(8, 8)
 
 	sprite := newSprite(
 		"res/shaders/vert/pacman.glsl",
 		"res/shaders/frag/pacman.glsl",
 		"",
-		-1, -1, float32(w), float32(h),
+		0, 0, float32(w), float32(h),
 		[]string{
 			"t",
 			"dir",
@@ -58,5 +63,5 @@ func newPacman() pacman {
 		},
 	)
 
-	return pacman{sprite, 0, 4, 4}
+	return pacman{sprite, 0, lvl.getNode(1, 1)}
 }
