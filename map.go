@@ -74,7 +74,7 @@ func newLevel(path string) *level {
 
 	for y := 1; y < h-1; y++ {
 		prv := false
-		cur := false
+		cur := text[y*w] == 48
 		nxt := text[y*w+1] == 48
 
 		var leftNode *node
@@ -89,6 +89,17 @@ func newLevel(path string) *level {
 			}
 
 			var n *node
+
+			if prv && nxt && x == 1 {
+				n = &node{0, y, [4]*connection{}}
+				leftNode = n
+			}
+
+			if prv && nxt && x == w-2 {
+				n = &node{w - 1, y, [4]*connection{}}
+				connnectNodesLR(leftNode, n)
+				leftNode = nil
+			}
 
 			if prv {
 				if nxt { // 000
@@ -114,7 +125,7 @@ func newLevel(path string) *level {
 			}
 
 			if n != nil {
-				nodes[[2]int{x, y}] = n
+				nodes[[2]int{n.x, n.y}] = n
 
 				if text[(y-1)*w+x] == 48 {
 					connectNodesTB(topNodes[x], n)
@@ -126,6 +137,15 @@ func newLevel(path string) *level {
 					topNodes[x] = nil
 				}
 			}
+		}
+	}
+
+	for y := 1; y < h-1; y++ {
+		n1 := nodes[[2]int{0, y}]
+		n2 := nodes[[2]int{w - 1, y}]
+		if n1 != nil && n2 != nil {
+			n1.connections[3] = &connection{0, n2}
+			n2.connections[1] = &connection{0, n1}
 		}
 	}
 

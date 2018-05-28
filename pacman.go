@@ -43,7 +43,11 @@ func (p *pacman) update(t, dT float64) {
 			p.dir = p.nextDir
 		}
 	} else {
-		p.travel += dT / float64(p.to.distance) * 4
+		if p.to.distance == 0 {
+			p.travel = 1
+		} else {
+			p.travel += dT / float64(p.to.distance) * 4
+		}
 
 		x := float64(p.from.x) + p.travel*float64(p.to.node.x-p.from.x)
 		y := float64(p.from.y) + p.travel*float64(p.to.node.y-p.from.y)
